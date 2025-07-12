@@ -31,7 +31,7 @@ function roundRect(ctx, x, y, width, height, radius) {
 
 async function createCollage(results, query) {
     const columns = 4;
-    const imageWidth = 236; 
+    const imageWidth = 236;
     const gap = 15;
     const headerHeight = 60;
     const footerHeight = 40;
@@ -39,7 +39,7 @@ async function createCollage(results, query) {
 
     const images = results;
     if (images.length === 0) throw new Error('No images to create a collage.');
-    
+
     const columnHeights = new Array(columns).fill(headerHeight + gap);
     const imagePositions = [];
 
@@ -69,7 +69,7 @@ async function createCollage(results, query) {
 
     context.fillStyle = '#FFFFFF';
     context.fillRect(0, 0, canvasWidth, canvasHeight);
-    
+
     context.font = 'bold 20px Arial';
     context.fillStyle = '#111';
     context.textAlign = 'center';
@@ -79,13 +79,13 @@ async function createCollage(results, query) {
         const pos = imagePositions[i];
         try {
             const loadedImage = await loadImage(pos.url);
-            
+
             context.save();
             roundRect(context, pos.x, pos.y, pos.width, pos.height, cornerRadius);
             context.clip();
             context.drawImage(loadedImage, pos.x, pos.y, pos.width, pos.height);
             context.restore();
-            
+
             context.fillStyle = 'white';
             context.beginPath();
             context.arc(pos.x + 22, pos.y + 22, 14, 0, Math.PI * 2, true);
@@ -102,7 +102,7 @@ async function createCollage(results, query) {
             context.fillRect(pos.x, pos.y, pos.width, pos.height);
         }
     }
-    
+
     context.font = '14px Arial';
     context.fillStyle = '#555';
     context.textAlign = 'center';
@@ -111,7 +111,6 @@ async function createCollage(results, query) {
     return canvas.toBuffer('image/png');
 }
 
-export const test_createCollage = createCollage;
 
 export default {
     name: 'pinterest',
@@ -130,7 +129,7 @@ export default {
             await reply('🔍 Searching Pinterest for you...');
             const response = await pinterest.search(query);
             const results = response?.resource_response?.data?.results;
-            const bookmark = response?.resource_response?.data?.bookmark;
+            const bookmark = response?.resource_response?.bookmark;
 
             if (!results || results.length === 0) {
                 return reply('No results found for that query.');
@@ -141,14 +140,14 @@ export default {
 
             const collageBuffer = await createCollage(results, query);
             const collageMessage = await sendAttachment('image', collageBuffer);
-            
+
             if (collageMessage && collageMessage.data && collageMessage.data.message_id) {
                 global.commandOnReply.set(collageMessage.data.message_id, {
                     handler: this.onReply,
                     ctx: { ...ctx, command: this }
                 });
             }
-            
+
             if (bookmark) {
                 const payload = {
                     template_type: 'button',
@@ -197,7 +196,7 @@ export default {
     },
     async onPostBack(ctx, payload) {
         if (!payload.startsWith('pinterest:next:')) return;
-        
+
         const { senderId, reply, sendAttachment } = ctx;
         const [, queryEncoded, bookmark] = payload.split(':');
         const query = decodeURIComponent(queryEncoded);
@@ -206,7 +205,7 @@ export default {
             await reply('Searching for more...');
             const response = await pinterest.getNextPage(query, bookmark);
             const newResults = response?.resource_response?.data?.results;
-            const newBookmark = response?.resource_response?.data?.bookmark;
+            const newBookmark = response?.resource_response?.bookmark;
 
             if (!newResults || newResults.length === 0) {
                 return reply('No more results found.');
@@ -226,7 +225,7 @@ export default {
             }
 
             if (newBookmark) {
-                 const newPayload = {
+                const newPayload = {
                     template_type: 'button',
                     text: 'Want to see more?',
                     buttons: [{
