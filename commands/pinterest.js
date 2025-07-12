@@ -195,7 +195,7 @@ export default {
         }
     },
     async onPostBack(ctx, payload) {
-        if (payload !== 'pinterest:next') return;
+        if (payload !== 'next') return;
         
         const { senderId, reply, sendAttachment } = ctx;
         const cachedData = searchCache.get(senderId);
@@ -230,7 +230,7 @@ export default {
             }
 
             if (newBookmark) {
-                const newPayload = {
+                 const newPayload = {
                     template_type: 'button',
                     text: 'Want to see more?',
                     buttons: [{
