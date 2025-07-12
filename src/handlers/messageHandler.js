@@ -4,6 +4,7 @@ import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import FormData from 'form-data';
 import * as userDb from '../utils/userDb.js';
 import * as userApi from '../utils/userApi.js';
 import * as commandLoader from './commandLoader.js';
@@ -199,27 +200,52 @@ export async function handleMessage(webhookEvent) {
     // Determine prefix for this user
     const userPrefix = (user && user.custom && user.custom.prefix) ? user.custom.prefix : COMMAND_PREFIX;
 
-    // Helper to send attachments
-    const sendAttachment = async (type, urlOrArray) => {
-        const toPayload = (item) =>
-            typeof item === 'string' ? { url: item, is_reusable: false } : item;
-        if (Array.isArray(urlOrArray)) {
-            for (const item of urlOrArray) {
-                await callSendAPI(senderId, {
-                    attachment: {
-                        type,
-                        payload: toPayload(item)
-                    }
-                });
-            }
-        } else {
-            await callSendAPI(senderId, {
-                attachment: {
-                    type,
-                    payload: toPayload(urlOrArray)
-                }
-            });
+    const sendAttachment = async (type, data) => {
+        if (typeof data === 'string' && data.startsWith('http')) {
+            return callSendAPI(senderId, { attachment: { type, payload: { url: data, is_reusable: false } } });
         }
+    
+        if (Buffer.isBuffer(data)) {
+            const form = new FormData();
+            form.append('recipient', JSON.stringify({ id: senderId }));
+            form.append('messaging_type', 'RESPONSE');
+            form.append('message', JSON.stringify({ attachment: { type: type, payload: {} } }));
+            form.append('filedata', data, {
+                filename: 'upload.png',
+                contentType: 'image/png'
+            });
+    
+            try {
+                const res = await axios.post(`https://graph.facebook.com/v19.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, form, {
+                    headers: { ...form.getHeaders() }
+                });
+                logger.success('Attachment buffer sent successfully!');
+                return res;
+            } catch (error) {
+                if (error.response) {
+                    logger.error('Messenger API Error Response (Attachment):', {
+                        status: error.response.status,
+                        data: error.response.data
+                    });
+                } else {
+                    logger.error('Error sending attachment to Messenger API:', error.message);
+                }
+                return undefined;
+            }
+        }
+    
+        if (typeof data === 'object' && !Array.isArray(data)) {
+            return callSendAPI(senderId, { attachment: { type, payload: data } });
+        }
+    
+        if (Array.isArray(data)) {
+            for (const item of data) {
+                await sendAttachment(type, item);
+            }
+            return;
+        }
+        
+        logger.warn('Unsupported attachment data type:', typeof data);
     };
 
     if (webhookEvent.message) {
@@ -269,27 +295,7 @@ export async function handleMessage(webhookEvent) {
                             }
                             return lastRes;
                         },
-                        sendAttachment: async (type, urlOrArray) => {
-                            const toPayload = (item) =>
-                                typeof item === 'string' ? { url: item, is_reusable: false } : item;
-                            if (Array.isArray(urlOrArray)) {
-                                for (const item of urlOrArray) {
-                                    await callSendAPI(senderId, {
-                                        attachment: {
-                                            type,
-                                            payload: toPayload(item)
-                                        }
-                                    });
-                                }
-                            } else {
-                                await callSendAPI(senderId, {
-                                    attachment: {
-                                        type,
-                                        payload: toPayload(urlOrArray)
-                                    }
-                                });
-                            }
-                        },
+                        sendAttachment,
                         commands,
                     };
                     if (typeof command.onCall === 'function') {
@@ -357,27 +363,7 @@ export async function handleMessage(webhookEvent) {
                         await callSendAPI(senderId, { text: chunk });
                     }
                 },
-                sendAttachment: async (type, urlOrArray) => {
-                    const toPayload = (item) =>
-                        typeof item === 'string' ? { url: item, is_reusable: false } : item;
-                    if (Array.isArray(urlOrArray)) {
-                        for (const item of urlOrArray) {
-                            await callSendAPI(senderId, {
-                                attachment: {
-                                    type,
-                                    payload: toPayload(item)
-                                }
-                            });
-                        }
-                    } else {
-                        await callSendAPI(senderId, {
-                            attachment: {
-                                type,
-                                payload: toPayload(urlOrArray)
-                            }
-                        });
-                    }
-                },
+                sendAttachment,
                 commands,
             };
             await command.onPostBack(ctx, postbackPayload);
