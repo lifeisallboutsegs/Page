@@ -3,7 +3,7 @@ export default {
     aliases: ['p'],
     description: 'Replies with Pong!',
     usage: '{prefix}ping',
-    adminOnly: true,
+    category: 'utility',
     async execute({ senderId, reply }) {
         const latencies = global.commandLatencies && global.commandLatencies[senderId];
         if (!latencies || latencies.length === 0) {

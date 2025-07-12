@@ -5,6 +5,7 @@ export default {
     description: 'Admin command management. Usage: !cmd install <name> <url> | reload <name> | unload <name>',
     usage: '{prefix}cmd install <name> <url> | reload <name> | unload <name>',
     adminOnly: true,
+    category: 'admin',
     async execute({ args, reply }) {
         if (args[0] === 'install' && args[1] && args[2]) {
             const [ , name, url ] = args;

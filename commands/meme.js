@@ -60,6 +60,7 @@ export default {
     name: 'meme',
     description: 'Get a random meme with interactive buttons.',
     usage: '{prefix}meme [next]',
+    category: 'fun',
     async onCall(ctx) {
         try {
             await sendMeme(ctx);

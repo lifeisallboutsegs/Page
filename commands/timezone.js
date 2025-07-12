@@ -7,6 +7,7 @@ export default {
     name: 'timezone',
     description: 'Set your timezone for personalized moment messages.',
     usage: '{PREFIX}timezone <timezone_name_or_gmt_offset>',
+    category: 'utility',
     examples: [
         '{PREFIX}timezone Asia/Dhaka',
         '{PREFIX}timezone Dhaka',
