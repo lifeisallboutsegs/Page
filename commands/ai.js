@@ -120,7 +120,7 @@ export default {
         await command.onCall({
             ...ctx,
             args: [prompt],
-            message: replyMessage, // use the new user reply as message
+            message: replyMessage, 
             webhookEvent,
             user,
             senderId
