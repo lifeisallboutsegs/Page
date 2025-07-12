@@ -3,7 +3,7 @@ import config from '../config.js';
 export default {
     name: 'help',
     aliases: ['h'],
-    description: 'List all commands or get help for a specific command.',
+    description: 'Lists all commands or gets help for a specific command.',
     usage: '{prefix}help [command]',
     category: 'general',
     execute({ args, reply, senderId, commands, user }) {
@@ -19,24 +19,22 @@ export default {
 
             for (const cmd of uniqueCommands) {
                 const category = cmd.category || 'other';
-                if (!categorized[category]) {
-                    categorized[category] = [];
-                }
+                if (!categorized[category]) categorized[category] = [];
                 categorized[category].push(cmd);
             }
 
-            let helpMessage = '⁜ All Commands ⁜\n\n';
+            let helpMessage = '╭─ Commands List ─╮\n';
             const sortedCategories = Object.keys(categorized).sort();
 
-            for (const category of sortedCategories) {
-                helpMessage += `⯁ ${category.charAt(0).toUpperCase() + category.slice(1)}\n`;
+            sortedCategories.forEach((category, index) => {
+                helpMessage += `│\n├─⯁ ${category.charAt(0).toUpperCase() + category.slice(1)}\n`;
                 const sortedCommands = categorized[category].sort((a, b) => a.name.localeCompare(b.name));
                 for (const cmd of sortedCommands) {
-                    helpMessage += `  • ${cmd.name} - ${replacePrefix(cmd.description) || ''}\n`;
+                    helpMessage += `│  ${cmd.name} ⮞ ${replacePrefix(cmd.description) || ''}\n`;
                 }
-                helpMessage += '\n';
-            }
-            helpMessage += `Type \`${userPrefix}help <command>\` for more details.`;
+            });
+
+            helpMessage += `│\n╰─ Type \`${userPrefix}help <command>\` for more details.`;
             reply(helpMessage.trim());
         } else {
             const name = args[0].toLowerCase();
@@ -45,25 +43,24 @@ export default {
                 return reply(`❌ Unknown command: "${name}"`);
             }
 
-            let helpMessage = `⁜ Command: ${cmd.name} ⁜\n\n`;
-            if (cmd.description) helpMessage += `⮞ Description: ${replacePrefix(cmd.description)}\n`;
+            let helpMessage = `╭─ Command: ${cmd.name} ─╮\n│\n`;
+            if (cmd.description) helpMessage += `├─⮞ Description: ${replacePrefix(cmd.description)}\n`;
             if (cmd.aliases && cmd.aliases.length) {
-                helpMessage += `⮞ Aliases: ${cmd.aliases.join(', ')}\n\n`;
-            } else {
-                helpMessage += '\n';
+                helpMessage += `├─⮞ Aliases: ${cmd.aliases.join(', ')}\n`;
             }
 
-            if (cmd.usage) helpMessage += `⮞ Usage: ${replacePrefix(cmd.usage)}\n`;
+            if (cmd.usage) helpMessage += `├─⮞ Usage: ${replacePrefix(cmd.usage)}\n`;
 
             if (cmd.examples && cmd.examples.length) {
                 const examples = Array.isArray(cmd.examples)
-                    ? cmd.examples.map(e => `  • ${replacePrefix(e)}`).join('\n')
-                    : `  • ${replacePrefix(cmd.examples)}`;
-                helpMessage += `\n⮞ Examples:\n${examples}\n`;
+                    ? cmd.examples.map(e => `│  • ${replacePrefix(e)}`).join('\n')
+                    : `│  • ${replacePrefix(cmd.examples)}`;
+                helpMessage += `│\n├─⮞ Examples:\n${examples}\n`;
             }
             
-            if (cmd.adminOnly) helpMessage += '\n🔒 This is an admin-only command.';
+            if (cmd.adminOnly) helpMessage += '│\n├─🔒 This is an admin-only command.\n';
 
+            helpMessage += '╰─';
             reply(helpMessage.trim());
         }
     },

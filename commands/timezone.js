@@ -5,7 +5,7 @@ import cityTimezones from 'city-timezones';
 import config from '../config.js';
 export default {
     name: 'timezone',
-    description: 'Set your timezone for personalized moment messages.',
+    description: 'Sets your timezone.',
     usage: '{PREFIX}timezone <timezone_name_or_gmt_offset>',
     category: 'utility',
     examples: [

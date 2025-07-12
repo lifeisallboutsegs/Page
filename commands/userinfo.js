@@ -5,7 +5,7 @@ import moment from 'moment';
 export default {
     name: 'userinfo',
     aliases: ['me', 'profile'],
-    description: 'Show your Messenger profile info.',
+    description: 'Shows your Messenger profile info.',
     usage: '{prefix}userinfo [refresh]',
     category: 'general',
     async execute({ user, senderId, args, reply, sendAttachment }) {

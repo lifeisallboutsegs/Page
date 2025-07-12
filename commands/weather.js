@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default {
     name: 'weather',
-    description: 'Get current weather for a city. Example: {prefix}weather Dhaka',
+    description: 'Get current weather for a city.',
     usage: '{prefix}weather <city>',
     category: 'utility',
     async onCall({ args, reply, user }) {

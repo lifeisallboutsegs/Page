@@ -2,7 +2,7 @@ import * as userDb from '../src/utils/userDb.js';
 
 export default {
     name: 'prefix',
-    description: 'Get or set your custom command prefix.',
+    description: 'Gets or sets your custom command prefix.',
     usage: '{prefix}prefix [newPrefix]',
     category: 'utility',
     async execute({ user, senderId, args, reply }) {

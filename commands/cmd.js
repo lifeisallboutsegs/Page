@@ -2,7 +2,7 @@ import * as commandLoader from '../src/handlers/commandLoader.js';
 
 export default {
     name: 'cmd',
-    description: 'Admin command management. Usage: !cmd install <name> <url> | reload <name> | unload <name>',
+    description: 'Manage bot commands (admin only).',
     usage: '{prefix}cmd install <name> <url> | reload <name> | unload <name>',
     adminOnly: true,
     category: 'admin',

@@ -5,7 +5,7 @@ const META_AI_BASE = 'http://193.149.164.168:2040';
 
 export default {
     name: 'ai',
-    description: 'Chat with Meta AI. Supports threading and image prompts. Example: {prefix}ai What is the capital of France? --img <url> --reset',
+    description: 'Chat with Meta AI.',
     usage: '{prefix}ai <prompt> [--img <image_url>] [--reset] [attach image]',
     category: 'ai',
     async onCall(ctx) {

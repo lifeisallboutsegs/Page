@@ -58,7 +58,7 @@ async function sendMeme(ctx) {
 
 export default {
     name: 'meme',
-    description: 'Get a random meme with interactive buttons.',
+    description: 'Gets a random meme.',
     usage: '{prefix}meme [next]',
     category: 'fun',
     async onCall(ctx) {
