@@ -155,7 +155,7 @@ export default {
                     buttons: [{
                         type: 'postback',
                         title: 'Next Page ⮞',
-                        payload: `pinterest:next:${encodeURIComponent(query)}:${bookmark}`
+                        payload: `pinterest:next`
                     }]
                 };
                 await ctx.sendTemplate(payload);
@@ -195,11 +195,16 @@ export default {
         }
     },
     async onPostBack(ctx, payload) {
-        if (!payload.startsWith('pinterest:next:')) return;
-
+        if (payload !== 'pinterest:next') return;
+        
         const { senderId, reply, sendAttachment } = ctx;
-        const [, queryEncoded, bookmark] = payload.split(':');
-        const query = decodeURIComponent(queryEncoded);
+        const cachedData = searchCache.get(senderId);
+
+        if (!cachedData || !cachedData.bookmark) {
+            return reply('Your previous search has expired. Please start a new search.');
+        }
+
+        const { query, bookmark } = cachedData;
 
         try {
             await reply('Searching for more...');
@@ -231,7 +236,7 @@ export default {
                     buttons: [{
                         type: 'postback',
                         title: 'Next Page ⮞',
-                        payload: `pinterest:next:${encodeURIComponent(query)}:${newBookmark}`
+                        payload: `pinterest:next`
                     }]
                 };
                 await ctx.sendTemplate(newPayload);
