@@ -140,7 +140,14 @@ export default {
             searchCache.set(senderId, { query, results, bookmark, imageList });
 
             const collageBuffer = await createCollage(results, query);
-            await sendAttachment('image', collageBuffer);
+            const collageMessage = await sendAttachment('image', collageBuffer);
+            
+            if (collageMessage && collageMessage.data && collageMessage.data.message_id) {
+                global.commandOnReply.set(collageMessage.data.message_id, {
+                    handler: this.onReply,
+                    ctx: { ...ctx, command: this }
+                });
+            }
             
             if (bookmark) {
                 const payload = {
@@ -160,11 +167,21 @@ export default {
         }
     },
     async onReply(ctx) {
+        const { replyMessage, user, senderId, webhookEvent, command } = ctx;
+        await command._handleReply({
+            ...ctx,
+            message: replyMessage,
+            webhookEvent,
+            user,
+            senderId
+        });
+    },
+    async _handleReply(ctx) {
         const { senderId, reply, sendAttachment, message } = ctx;
         const cached = searchCache.get(senderId);
         if (!cached) return;
 
-        const indexes = message.body.match(/\d+/g);
+        const indexes = message.text.match(/\d+/g);
         if (!indexes) return;
 
         for (const indexStr of indexes) {
@@ -199,7 +216,14 @@ export default {
             searchCache.set(senderId, { query, results: newResults, bookmark: newBookmark, imageList });
 
             const collageBuffer = await createCollage(newResults, query);
-            await sendAttachment('image', collageBuffer);
+            const collageMessage = await sendAttachment('image', collageBuffer);
+
+            if (collageMessage && collageMessage.data && collageMessage.data.message_id) {
+                global.commandOnReply.set(collageMessage.data.message_id, {
+                    handler: this.onReply,
+                    ctx: { ...ctx, command: this }
+                });
+            }
 
             if (newBookmark) {
                  const newPayload = {
