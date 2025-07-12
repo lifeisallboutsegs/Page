@@ -6,7 +6,7 @@ import logger from './logger.js';
 import messageHandler from './src/handlers/messageHandler.js';
 import { initMomentSender } from './src/handlers/momentSender.js';
 // Use environment variables from config
-const PORT =config.PORT || process.env.PORT || 3000;
+const PORT = config.PORT || process.env.PORT || 3000;
 const VERIFY_TOKEN = config.VERIFY_TOKEN;
 
 // Configure logger based on environment or settings
@@ -49,6 +49,7 @@ app.post('/webhook', async (req, res) => {
         for (const event of entry) {
             const { messaging } = event;
             for (const message of messaging) {
+
                 messageHandler.handleMessage(message);
 
             }

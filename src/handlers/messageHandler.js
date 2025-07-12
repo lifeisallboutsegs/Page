@@ -153,7 +153,7 @@ export async function handleMessage(webhookEvent) {
             webhookEvent.message.text ||
             webhookEvent.message.quick_reply ||
             webhookEvent.message.reply_to
-        )
+        ) || webhookEvent.postback
     )) return;
 
     // Ignore any message sent by the page itself (bot), or empty messages (no text, no quick_reply, no reply_to)
@@ -520,4 +520,4 @@ async function handlePostback(senderId, postback) {
     }
 }
 
-export default { handleMessage }; 
+export default { handleMessage };
