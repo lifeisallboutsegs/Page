@@ -248,6 +248,15 @@ export async function handleMessage(webhookEvent) {
         logger.warn('Unsupported attachment data type:', typeof data);
     };
 
+    const sendTemplate = async (payload) => {
+        return callSendAPI(senderId, {
+            attachment: {
+                type: 'template',
+                payload: payload,
+            },
+        });
+    };
+
     if (webhookEvent.message) {
         const message = webhookEvent.message;
         const { text, attachments, quick_reply } = message;
@@ -296,6 +305,7 @@ export async function handleMessage(webhookEvent) {
                             return lastRes;
                         },
                         sendAttachment,
+                        sendTemplate,
                         commands,
                     };
                     if (typeof command.onCall === 'function') {
@@ -364,6 +374,7 @@ export async function handleMessage(webhookEvent) {
                     }
                 },
                 sendAttachment,
+                sendTemplate,
                 commands,
             };
             await command.onPostBack(ctx, postbackPayload);

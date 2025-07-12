@@ -159,7 +159,7 @@ export default {
                         payload: `pinterest:next:${encodeURIComponent(query)}:${bookmark}`
                     }]
                 };
-                await ctx.sendAttachment('template', payload);
+                await ctx.sendTemplate(payload);
             }
         } catch (error) {
             logger.error('Pinterest command failed:', error);
@@ -235,7 +235,7 @@ export default {
                         payload: `pinterest:next:${encodeURIComponent(query)}:${newBookmark}`
                     }]
                 };
-                await ctx.sendAttachment('template', newPayload);
+                await ctx.sendTemplate(newPayload);
             }
         } catch (error) {
             logger.error('Pinterest pagination failed:', error);
