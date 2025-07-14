@@ -1,3 +1,4 @@
+import 'dotenv/config'
 export default {
     PORT: process.env.PORT,
     VERIFY_TOKEN: process.env.VERIFY_TOKEN,

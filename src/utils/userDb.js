@@ -145,3 +145,12 @@ export async function getAllUsers() {
         default: throw new Error('Unknown userDbType in config');
     }
 }
+
+export async function createUserIfNotExists(psid) {
+    let user = await getUser(psid);
+    if (!user) {
+        user = { psid };
+        await saveUser(psid, user);
+    }
+    return user;
+}

@@ -10,6 +10,9 @@ export default {
     category: 'general',
     async execute({ user, senderId, args, reply, sendAttachment }) {
         let u = user;
+        if (!u) {
+            u = await userDb.createUserIfNotExists(senderId);
+        }
         if (args[0] && args[0].toLowerCase() === 'refresh') {
             u = await userApi.fetchUserInfo(senderId);
             if (u) await userDb.saveUser(senderId, u);

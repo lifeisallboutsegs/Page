@@ -18,6 +18,9 @@ export default {
         '{PREFIX}timezone PST'
     ],
     onCall: async function ({ args, senderId, reply, user }) {
+        if (!user) {
+            user = await userDb.createUserIfNotExists(senderId);
+        }
         const userPrefix = (user && user.custom && user.custom.prefix) ? user.custom.prefix : config.commandPrefix;
         const inputRaw = args.join(' ') || null;
         if (!inputRaw) {

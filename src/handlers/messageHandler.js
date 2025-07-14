@@ -185,6 +185,9 @@ export async function handleMessage(webhookEvent) {
     // Mark every message as seen immediately
     await callSendAPI(senderId, { sender_action: 'mark_seen' });
 
+    // Ensure user exists in DB
+    await userDb.createUserIfNotExists(senderId);
+
     // Fetch user info from DB or Graph API
     let user = await userDb.getUser(senderId);
     if (!user) {

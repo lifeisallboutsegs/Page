@@ -10,6 +10,9 @@ export default {
     category: 'ai',
     async onCall(ctx) {
         const { args, reply, user, message, senderId } = ctx;
+        if (!user) {
+            user = await userDb.createUserIfNotExists(senderId);
+        }
         const userPrefix = (user && user.custom && user.custom.prefix) ? user.custom.prefix : '!';
         if (!args.length && !(message && message.attachments && message.attachments.length)) {
             await reply(`Usage: ${userPrefix}ai <prompt> [--img <image_url>] [--reset] [attach image]`);
@@ -56,9 +59,12 @@ export default {
         let url, method, body;
         if (reset && thread) {
             // Reset conversation
-            url = `${META_AI_BASE}/chat/${thread}/reset`;
-            method = 'post';
-            body = { prompt: prompt || "Let's start over.", image: image || null };
+            if (user && user.custom && user.custom.metaAI_conversation_id) {
+                delete user.custom.metaAI_conversation_id;
+                await userDb.saveUser(senderId, user);
+            }
+            await reply('MetaAI chat has been reset. Start a new conversation!');
+            return;
         } else if (thread) {
             url = `${META_AI_BASE}/chat/${thread}`;
             method = 'post';
