@@ -18,7 +18,7 @@ export default {
             if (u) await userDb.saveUser(senderId, u);
         }
         if (!u) return reply('User info not found.');
-        let msg = `👤 Name: ${u.first_name || ''} ${u.last_name || ''}\n`;
+        let msg = `👤 Name: ${u.first_name || ''} ${u.last_name || 'Not specified'}\n`;
         if (u.psid) msg += `🆔 ID: ${u.psid}\n`;
         if (u.locale) msg += `🌐 Locale: ${u.locale}\n`;
         if (u.custom.timezone !== undefined) msg += `🕒 Timezone: GMT ${u.custom.timezone >= 0 ? '+' : ''}${u.custom.timezone}\n`;
