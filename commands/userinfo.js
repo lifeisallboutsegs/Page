@@ -21,7 +21,12 @@ export default {
         let msg = `👤 Name: ${u.first_name ? u.first_name : ''} ${u.last_name ? u.last_name : ''}\n`;
         if (u.psid) msg += `🆔 ID: ${u.psid}\n`;
         if (u.locale) msg += `🌐 Locale: ${u.locale}\n`;
-        if (u.custom.timezone !== undefined) msg += `🕒 Timezone: ${u.custom.timezone}\n`;
+        if (u.custom.timezone) {
+            const tz = u.custom.timezone;
+            const now = moment().tz(tz);
+            const offset = now.format('Z'); // e.g., "+06:00"
+            msg += `🕒 Timezone: ${tz} (GMT${offset})\n`;
+        }
         if (u.gender) msg += `⚧ Gender: ${u.gender}\n`;
         if (u.lastActive) msg += `🕓 Last Active: ${moment(u.lastActive).fromNow()}\n`;
         if (u.profile_pic) sendAttachment('image', u.profile_pic);
