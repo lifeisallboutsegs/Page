@@ -23,7 +23,7 @@ export default {
         if (u.locale) msg += `🌐 Locale: ${u.locale}\n`;
         if (u.custom.timezone !== undefined) msg += `🕒 Timezone: GMT ${u.custom.timezone >= 0 ? '+' : ''}${u.custom.timezone}\n`;
         if (u.gender) msg += `⚧ Gender: ${u.gender}\n`;
-        if (u.lastActive) msg += `🕓 Last Active: active ${moment(u.lastActive).fromNow()}\n`;
+        if (u.lastActive) msg += `🕓 Last Active: ${moment(u.lastActive).fromNow()}\n`;
         if (u.profile_pic) sendAttachment('image', u.profile_pic);
         reply(msg.trim());
     },
