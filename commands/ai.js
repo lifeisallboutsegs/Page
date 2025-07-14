@@ -93,7 +93,7 @@ export default {
             }
             let msg = `${data.message}`;
             if (data.sources && data.sources.length) {
-                msg += '\n\nSources:\n' + data.sources.map(s => `- ${s}`).join('\n');
+                msg += '\n\nSources:\n' + data.sources.map(s => `- [${s.title}](${s.link})`).join('\n');
             }
             if (data.media && data.media.length) {
                 for (const m of data.media) {
